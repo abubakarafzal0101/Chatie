@@ -2,9 +2,10 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import cors from "cors";
-import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import connectDB from "./config/mongodb.js";
+import authRouter from "./routes/auth.routes.js";
+import userRouter from "./routes/user.routes.js";
 const app = express();
 
 // connection database
@@ -22,11 +23,20 @@ app.use(async (req, res, next) => {
 });
 
 // middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  }),
+);
 
 // routes
 app.get("/", (req, res) => {
   res.send("hello world");
 });
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 // listining server
 if (process.env.NODE_ENV === "development") {
   app.listen(process.env.PORT, () => {
