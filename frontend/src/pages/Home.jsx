@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 const Home = ({ setToken }) => {
   const navigate = useNavigate();
@@ -7,9 +8,11 @@ const Home = ({ setToken }) => {
     setToken(null);
     navigate("/login");
   };
+  const { userData } = useSelector((state) => state.user);
   return (
     <div>
       <button onClick={handlelogout}>Logout</button>
+      <h1>{userData?.email || "User"}</h1>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import ScrollToTop from "./components/ScrollToTop";
+import { useGetUserData } from "./hooks/getUserData";
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -18,6 +19,8 @@ const App = () => {
 
     return children;
   };
+
+  useGetUserData(token);
 
   return (
     <>
