@@ -1,0 +1,38 @@
+import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
+import { Route, Routes } from "react-router-dom";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Home from "./pages/Home";
+const App = () => {
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    }
+  }, [token]);
+
+  return (
+    <>
+      <Toaster />
+
+      <Routes>
+        <Route
+          path="/"
+          element={token ? <Home setToken={setToken} /> : <Login />}
+        />
+        <Route
+          path="/login"
+          element={token ? <Home /> : <Login setToken={setToken} />}
+        />
+        <Route
+          path="/signup"
+          element={token ? <Home /> : <Signup setToken={setToken} />}
+        />
+      </Routes>
+    </>
+  );
+};
+
+export default App;
