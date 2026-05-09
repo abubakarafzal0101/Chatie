@@ -51,11 +51,13 @@ const Signup = ({ setToken }) => {
       if (response.data.success) {
         toast.success(response.data.message);
 
-        localStorage.setItem("token", response.data.token);
+        const newToken = response.data.token;
 
-        setToken(response.data.token);
+        localStorage.setItem("token", newToken);
 
-        navigate("/");
+        setToken(newToken);
+
+        navigate("/", { replace: true });
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Error while Signup");

@@ -1,37 +1,55 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Toaster } from "react-hot-toast";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
+
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import ScrollToTop from "./components/ScrollToTop";
 
 const App = () => {
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
+  // Protected Route
+  const ProtectedRoute = ({ children }) => {
+    if (!token) {
+      return <Navigate to="/login" replace />;
     }
-  }, [setToken]);
+
+    return children;
+  };
 
   return (
     <>
       <Toaster />
 
       <ScrollToTop />
+
       <Routes>
+        {/* Home */}
         <Route
           path="/"
-          element={token ? <Home setToken={setToken} /> : <Login />}
+          element={
+            <ProtectedRoute>
+              <Home setToken={setToken} />
+            </ProtectedRoute>
+          }
         />
+
+        {/* Login */}
         <Route
           path="/login"
-          element={token ? <Home /> : <Login setToken={setToken} />}
+          element={
+            token ? <Navigate to="/" replace /> : <Login setToken={setToken} />
+          }
         />
+
+        {/* Signup */}
         <Route
           path="/signup"
-          element={token ? <Home /> : <Signup setToken={setToken} />}
+          element={
+            token ? <Navigate to="/" replace /> : <Signup setToken={setToken} />
+          }
         />
       </Routes>
     </>
