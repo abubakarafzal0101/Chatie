@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
+import ScrollToTop from "./components/ScrollToTop";
 const App = () => {
   const [token, setToken] = useState(null);
 
@@ -16,7 +17,7 @@ const App = () => {
   return (
     <>
       <Toaster />
-
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"
