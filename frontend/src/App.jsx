@@ -7,18 +7,10 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import ScrollToTop from "./components/ScrollToTop";
 import { useGetUserData } from "./hooks/getUserData";
+import Profile from "./pages/Profile";
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
-
-  // Protected Route
-  const ProtectedRoute = ({ children }) => {
-    if (!token) {
-      return <Navigate to="/login" replace />;
-    }
-
-    return children;
-  };
 
   useGetUserData(token);
 
@@ -33,10 +25,17 @@ const App = () => {
         <Route
           path="/"
           element={
-            <ProtectedRoute>
+            token ? (
               <Home setToken={setToken} />
-            </ProtectedRoute>
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
+        />
+
+        <Route
+          path="/profile"
+          element={token ? <Profile /> : <Navigate to="/login" replace />}
         />
 
         {/* Login */}

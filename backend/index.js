@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import connectDB from "./config/mongodb.js";
 import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
+import cloudinary from "./config/cloudinary.js";
 const app = express();
 
 // connection database
@@ -35,6 +36,7 @@ app.use(
 app.get("/", (req, res) => {
   res.send("hello world");
 });
+
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 // listining server
