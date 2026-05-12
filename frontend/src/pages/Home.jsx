@@ -1,17 +1,43 @@
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+
 const Home = ({ setToken }) => {
-  const navigate = useNavigate();
+  const { selectedUser, userData, otherUsers } = useSelector(
+    (state) => state.user,
+  );
+
   const handlelogout = () => {
     localStorage.clear();
     setToken(null);
-    navigate("/login");
+    window.location.href = "/login";
   };
-  const { userData } = useSelector((state) => state.user);
+
   return (
-    <div>
-      <button onClick={handlelogout}>Logout</button>
-      <h1>{userData?.email || "User"}</h1>
+    <div className="w-screen h-screen flex bg-[#050816] text-white">
+      {/* SIDEBAR */}
+      <div
+        className={`
+          h-full border-r border-white/10
+          ${selectedUser ? "hidden md:block md:w-[30%]" : "w-full md:w-[30%]"}
+        `}
+      >
+        <Sidebar
+          userData={userData}
+          otherUsers={otherUsers}
+          handlelogout={handlelogout}
+        />
+      </div>
+
+      {/* CHAT AREA */}
+      <div
+        className={`
+          h-full
+          ${selectedUser ? "w-full md:w-[70%]" : "hidden md:block md:w-[70%]"}
+        `}
+      >
+        <Outlet />
+      </div>
     </div>
   );
 };

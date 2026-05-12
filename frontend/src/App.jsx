@@ -8,11 +8,14 @@ import Home from "./pages/Home";
 import ScrollToTop from "./components/ScrollToTop";
 import { useGetUserData } from "./hooks/getUserData";
 import Profile from "./pages/Profile";
+import { useGetOtherUsers } from "./hooks/getOtherUsersData";
+import ChatArea from "./components/ChatArea";
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
 
   useGetUserData(token);
+  useGetOtherUsers(token);
 
   return (
     <>
@@ -31,7 +34,18 @@ const App = () => {
               <Navigate to="/login" replace />
             )
           }
-        />
+        >
+          <Route
+            path="chat/:id"
+            element={
+              token ? (
+                <ChatArea setToken={setToken} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+        </Route>
 
         <Route
           path="/profile"

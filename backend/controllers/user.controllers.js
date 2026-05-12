@@ -73,3 +73,16 @@ export const editProfile = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
+export const getOtherUsers = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const users = await User.find({ _id: { $ne: userId } });
+    res.status(200).json({ success: true, users });
+  } catch (error) {
+    console.log("Error in getOtherUsers", error.message);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
