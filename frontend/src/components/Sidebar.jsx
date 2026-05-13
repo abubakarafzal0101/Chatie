@@ -62,7 +62,7 @@ const Sidebar = ({ userData, otherUsers, handlelogout }) => {
             <div
               key={user._id}
               onClick={() => openChat(user)}
-              className="flex flex-col items-center cursor-pointer min-w-[60px]"
+              className="flex flex-col items-center cursor-pointer min-w-15"
             >
               <img
                 src={user.image}

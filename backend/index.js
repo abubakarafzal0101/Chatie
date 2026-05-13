@@ -7,6 +7,7 @@ import connectDB from "./config/mongodb.js";
 import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
 import cloudinary from "./config/cloudinary.js";
+import messageRouter from "./routes/message.routes.js";
 const app = express();
 
 // connection database
@@ -39,6 +40,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/message", messageRouter);
 // listining server
 if (process.env.NODE_ENV === "development") {
   app.listen(process.env.PORT, () => {
