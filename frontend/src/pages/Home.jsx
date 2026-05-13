@@ -1,12 +1,13 @@
 import { useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import { useGetMessages } from "../hooks/getMessages";
 
 const Home = ({ setToken }) => {
   const { selectedUser, userData, otherUsers } = useSelector(
     (state) => state.user,
   );
-
+  useGetMessages(localStorage.getItem("token"));
   const handlelogout = () => {
     localStorage.clear();
     setToken(null);

@@ -97,10 +97,11 @@ export const sendMessage = async (req, res) => {
     await conversation.save();
 
     // ===== Response =====
+    // ===== Response =====
     return res.status(201).json({
       success: true,
-      message: "Message sent successfully",
-      data: newMessage,
+      message: "Message sent successfully", // Yai string toast ke liye hai
+      newMessage: newMessage, // ✅ Iska naam change kar diya taake overwrite na ho
     });
   } catch (error) {
     console.error("Error in sendMessage:", error);
