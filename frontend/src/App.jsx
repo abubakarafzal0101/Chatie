@@ -23,16 +23,25 @@ const App = () => {
 
   useEffect(() => {
     if (userData) {
-      const socketio = io(`${serverUrl}`, {
+      const socketio = io(serverUrl, {
+        transports: ["websocket", "polling"],
         query: {
           userId: userData?._id,
         },
       });
 
       dispatch(setSocket(socketio));
-      socketio.on("getOnlineUser", (user) => {
-        dispatch(setOnlineUsers(user));
+
+      socketio.on("connect", () => {
+        console.log("SOCKET CONNECTED:", socketio.id);
       });
+
+      socketio.on("getOnlineUser", (users) => {
+        console.log("ONLINE USERS:", users);
+
+        dispatch(setOnlineUsers(users));
+      });
+
       return () => socketio.close();
     } else {
       if (socket) {
