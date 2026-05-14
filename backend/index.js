@@ -8,7 +8,7 @@ import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
 import cloudinary from "./config/cloudinary.js";
 import messageRouter from "./routes/message.routes.js";
-const app = express();
+import { app, server } from "./socket/socket.js";
 
 // connection database
 app.use(async (req, res, next) => {
@@ -43,7 +43,7 @@ app.use("/api/user", userRouter);
 app.use("/api/message", messageRouter);
 // listining server
 if (process.env.NODE_ENV === "development") {
-  app.listen(process.env.PORT, () => {
+  server.listen(process.env.PORT, () => {
     console.log(`server is running on port ${process.env.PORT}`);
   });
 }

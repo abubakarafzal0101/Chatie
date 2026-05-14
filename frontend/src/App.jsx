@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { Route, Routes, Navigate } from "react-router-dom";
-
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
@@ -10,12 +9,38 @@ import { useGetUserData } from "./hooks/getUserData";
 import Profile from "./pages/Profile";
 import { useGetOtherUsers } from "./hooks/getOtherUsersData";
 import ChatArea from "./components/ChatArea";
-
+import { useEffect } from "react";
+import { io } from "socket.io-client";
+import { useDispatch, useSelector } from "react-redux";
+import { setOnlineUsers, setSocket } from "./redux/slices/userSlice";
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
-
+  const { userData, socket, onlineUsers } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const serverUrl = import.meta.env.VITE_SERVER_URL;
   useGetUserData(token);
   useGetOtherUsers(token);
+
+  useEffect(() => {
+    if (userData) {
+      const socketio = io(`${serverUrl}`, {
+        query: {
+          userId: userData?._id,
+        },
+      });
+
+      dispatch(setSocket(socketio));
+      socketio.on("getOnlineUser", (user) => {
+        dispatch(setOnlineUsers(user));
+      });
+      return () => socketio.close();
+    } else {
+      if (socket) {
+        socket.close();
+        dispatch(setSocket(null));
+      }
+    }
+  }, [userData]);
 
   return (
     <>
