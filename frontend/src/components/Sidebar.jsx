@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setSelectedUser } from "../redux/slices/userSlice";
 import { LogOut } from "lucide-react";
@@ -7,11 +7,22 @@ import { LogOut } from "lucide-react";
 const Sidebar = ({ userData, otherUsers, handlelogout }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
 
+  const [search, setSearch] = useState("");
+  const { onlineUsers } = useSelector((state) => state.user);
+
+  // SEARCH FILTER
   const filteredUsers = otherUsers?.filter((u) =>
     u.name.toLowerCase().includes(search.toLowerCase()),
   );
+
+  // ONLINE USERS ONLY
+  const onlineUsersList = filteredUsers?.filter((user) =>
+    onlineUsers?.includes(user._id),
+  );
+
+  // ALL USERS (SEARCHED)
+  const allUsersList = filteredUsers;
 
   const openChat = (user) => {
     dispatch(setSelectedUser(user));
@@ -19,27 +30,23 @@ const Sidebar = ({ userData, otherUsers, handlelogout }) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0b1220]">
+    <div className="h-full flex flex-col bg-[#0b1220] text-white">
       {/* HEADER */}
       <div className="p-4 border-b border-white/10">
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-bold">Chatie Chat</h1>
 
-          <button
-            onClick={handlelogout}
-            className="text-red-400 cursor-pointer"
-          >
+          <button onClick={handlelogout} className="text-red-400">
             <LogOut />
           </button>
         </div>
 
         <p className="text-sm text-gray-400 mt-1">Hi, {userData?.name}</p>
 
-        {/* PROFILE IMAGE */}
         <img
           src={userData?.image}
           onClick={() => navigate("/profile")}
-          className="w-10 h-10 rounded-full mt-3 cursor-pointer hover:scale-105 transition object-cover"
+          className="w-10 h-10 rounded-full mt-3 cursor-pointer object-cover"
         />
       </div>
 
@@ -53,49 +60,72 @@ const Sidebar = ({ userData, otherUsers, handlelogout }) => {
         />
       </div>
 
-      {/* USERS STRIP (ONLINE STYLE UI - STATIC FOR NOW) */}
+      {/* ONLINE USERS */}
       <div className="px-3 mb-3">
-        <h2 className="text-xs text-gray-400 mb-2">Users</h2>
+        <h2 className="text-xs text-green-400 mb-2">Online Users</h2>
 
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide">
-          {otherUsers?.map((user) => (
+        {onlineUsersList?.length > 0 ? (
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+            {onlineUsersList.map((user) => (
+              <div
+                key={user._id}
+                onClick={() => openChat(user)}
+                className="flex flex-col items-center cursor-pointer min-w-[60px]"
+              >
+                <div className="relative">
+                  <img
+                    src={user.image}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0b1220] rounded-full"></span>
+                </div>
+
+                <p className="text-[10px] text-gray-300 mt-1 truncate w-14 text-center">
+                  {user.name}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-gray-500">No users online</p>
+        )}
+      </div>
+
+      {/* ALL USERS */}
+      <div className="flex-1 overflow-y-auto">
+        <h2 className="text-xs text-gray-400 px-3 mb-2">All Users</h2>
+
+        {allUsersList?.map((user) => {
+          const isOnline = onlineUsers?.includes(user._id);
+
+          return (
             <div
               key={user._id}
               onClick={() => openChat(user)}
-              className="flex flex-col items-center cursor-pointer min-w-15"
+              className="flex items-center gap-3 p-3 hover:bg-white/10 cursor-pointer rounded-lg"
             >
-              <img
-                src={user.image}
-                className="w-12 h-12 rounded-full object-cover border-2 border-white/10 hover:border-cyan-400 transition"
-              />
+              <div className="relative">
+                <img
+                  src={user.image}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
 
-              <p className="text-[10px] text-gray-400 mt-1 truncate w-14 text-center">
-                {user.name}
-              </p>
+                {isOnline && (
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0b1220] rounded-full"></span>
+                )}
+              </div>
+
+              <div>
+                <p className="text-sm font-medium">{user.name}</p>
+
+                <p className="text-xs text-gray-400">
+                  {isOnline ? "Online" : "Offline"}
+                </p>
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* USERS */}
-      <div className="flex-1 overflow-y-auto">
-        {filteredUsers?.map((user) => (
-          <div
-            key={user._id}
-            onClick={() => openChat(user)}
-            className="flex items-center gap-3 p-3 hover:bg-white/10 cursor-pointer rounded-lg"
-          >
-            <img
-              src={user.image}
-              className="w-10 h-10 rounded-full object-cover"
-            />
-
-            <div>
-              <p className="text-sm font-medium">{user.name}</p>
-              <p className="text-xs text-gray-400">{user.email}</p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
