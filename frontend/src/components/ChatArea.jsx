@@ -15,7 +15,7 @@ const ChatArea = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
-  const { selectedUser, userData } = useSelector((state) => state.user);
+  const { selectedUser, userData, socket } = useSelector((state) => state.user);
   const { messages = [] } = useSelector((state) => state.message);
 
   const [message, setMessage] = useState("");
@@ -54,8 +54,6 @@ const ChatArea = () => {
       );
 
       if (response.data.success) {
-        toast.success(response.data.message);
-
         dispatch(setMessages([...messages, response.data.newMessage]));
 
         setMessage("");
@@ -79,6 +77,20 @@ const ChatArea = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewMessage = (mess) => {
+      dispatch(setMessages([...messages, mess]));
+    };
+
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [socket, messages, dispatch]);
 
   return (
     <div className="h-full flex flex-col bg-[#0b1220]">

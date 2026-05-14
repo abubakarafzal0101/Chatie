@@ -2,6 +2,8 @@ import Message from "../models/message.model.js";
 import Conversation from "../models/conversation.model.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+import { getReveiverSocketId, io } from "../socket/socket.js";
+
 export const sendMessage = async (req, res) => {
   try {
     const sender = req.userId;
@@ -96,12 +98,17 @@ export const sendMessage = async (req, res) => {
 
     await conversation.save();
 
-    // ===== Response =====
+    // ==== Socket Io Code ====
+    const receiverSocketId = getReveiverSocketId(receiver);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
+
     // ===== Response =====
     return res.status(201).json({
       success: true,
-      message: "Message sent successfully", // Yai string toast ke liye hai
-      newMessage: newMessage, // ✅ Iska naam change kar diya taake overwrite na ho
+      message: "Message sent successfully",
+      newMessage: newMessage,
     });
   } catch (error) {
     console.error("Error in sendMessage:", error);
